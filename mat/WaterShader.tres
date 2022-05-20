@@ -11,8 +11,8 @@ uniform float foam_movement;
 uniform float intersection_max_threshold = 1.0;
 uniform sampler2D displ_tex : hint_white;
 uniform float displ_amount = 0.6;
-uniform float near = 0.15;
-uniform float far = 300.0;
+uniform float near = 1;
+uniform float far = 8000;
  
 varying float threshold_scale;
 

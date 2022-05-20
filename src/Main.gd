@@ -1,9 +1,8 @@
 extends Node
-class_name DynamicWorldGenerator
 
 # World
-export (int) var chunk_size: int    # Width of a chunk in units
-export (int) var chunk_density: int # Faces per chunk
+export (int, 1, 256) var chunk_size: int    # Width of a chunk in units
+export (int, 1, 32) var chunk_density: int # Faces per chunk
 var _water_level: float
 var _noise_params: Array     # Values passed to OpenSimplexNoise for noise generation
 var _noise_generators: Array # OpenSimplexNoise objects for layering noise
@@ -13,7 +12,7 @@ var _last_preset: String
 # Rendering
 var _loaded_chunks: Dictionary = Dictionary()
 var _cached_chunks: Dictionary = Dictionary()
-export (int, 0, 64) var render_distance = 8 # Render radius in chunks
+export (int, 0, 48) var render_distance = 8 # Render radius in chunks
 const _CHUNK_CACHING_SCALE = 2.0 # Multiplied by render distance for caching distance
 var _do_chunk_caching = false
 
@@ -26,6 +25,17 @@ var _water_material: ShaderMaterial
 
 # Player
 onready var _player = $Player
+
+# Chunk class
+class Chunk extends Spatial:
+	
+	var chunk_pos: Vector2
+	
+	func _init(_chunk_pos: Vector2, land_mi: MeshInstance, water_mi: MeshInstance, sb: StaticBody):
+		chunk_pos = _chunk_pos
+		if not land_mi == null: add_child(land_mi)
+		if not water_mi == null: add_child(water_mi)
+		if not sb == null: add_child(sb)
 
 # Menu
 var _menu_open

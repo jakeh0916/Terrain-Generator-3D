@@ -1,22 +1,22 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://src/DynamicWorldGenerator.gd" type="Script" id=1]
+[ext_resource path="res://src/Main.gd" type="Script" id=1]
 [ext_resource path="res://src/Player.gd" type="Script" id=2]
-[ext_resource path="res://mat/WaterShader.tres" type="Shader" id=3]
-[ext_resource path="res://mat/ChunkShader.tres" type="Shader" id=4]
+[ext_resource path="res://mat/ChunkShader.tres" type="Shader" id=3]
+[ext_resource path="res://mat/WaterShader.tres" type="Shader" id=4]
 [ext_resource path="res://mat/SimpleNoise.png" type="Texture" id=5]
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.5
 
-[node name="App" type="Node"]
+[node name="Main" type="Node"]
 pause_mode = 2
 script = ExtResource( 1 )
-chunk_size = 16
+chunk_size = 100000
 chunk_density = 4
-render_distance = 4
-chunk_shader = ExtResource( 4 )
-water_shader = ExtResource( 3 )
+render_distance = 64
+chunk_shader = ExtResource( 3 )
+water_shader = ExtResource( 4 )
 simple_noise = ExtResource( 5 )
 
 [node name="Player" type="KinematicBody" parent="."]
@@ -30,8 +30,8 @@ shape = SubResource( 1 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
 
 [node name="Camera" type="Camera" parent="Player/CamOffset"]
-near = 0.1
-far = 1000.0
+near = 1.0
+far = 8192.0
 
 [node name="Sun" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, -0.819152, 0.573576, 0, -0.573576, -0.819152, 0, 2, 0 )
@@ -42,8 +42,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -186.0
-margin_top = -181.8
-margin_bottom = 0.200012
+margin_top = -158.0
 grow_horizontal = 0
 grow_vertical = 0
 __meta__ = {
@@ -54,7 +53,7 @@ __meta__ = {
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 179.0
-margin_bottom = 175.0
+margin_bottom = 151.0
 
 [node name="Title" type="Label" parent="InfoMenu/VBoxContainer"]
 margin_right = 172.0
@@ -94,17 +93,6 @@ Move
 Jump or Fly Up
 Sprint or Fly Down
 Toggle Flying"
-
-[node name="HSeparator2" type="HSeparator" parent="InfoMenu/VBoxContainer"]
-margin_top = 146.0
-margin_right = 172.0
-margin_bottom = 150.0
-
-[node name="Label" type="Label" parent="InfoMenu/VBoxContainer"]
-margin_top = 154.0
-margin_right = 172.0
-margin_bottom = 168.0
-text = "Created by Jake Huseman"
 
 [node name="MainMenu" type="PanelContainer" parent="."]
 anchor_left = 1.0
