@@ -8,18 +8,22 @@ const ACCEL = 10.0
 
 export (float) var look_sens  = 0.1
 export (float) var walk_speed = 3.0
-export (float) var run_speed  = 6.5
 export (float) var jump_force = 10.0
 
 var vclip = true
 var lin_vel = Vector3()
 var look_buffer = Vector2()
 
-var cam_pivot;
+var cam_pivot
 
-onready var app = get_tree().root.get_child(0)
+var app
 
 func _ready():
+	app = get_tree().root.get_child(0)
+	app.get_node("MainMenu/VBoxContainer/SpeedSlider").value = walk_speed
+	app.get_node("MainMenu/VBoxContainer/SensSlider").value = look_sens
+	app.get_node("MainMenu/VBoxContainer/SpeedSlider").hint_tooltip = str("Current Value: ", walk_speed)
+	app.get_node("MainMenu/VBoxContainer/SensSlider").hint_tooltip = str("Current Value: ", look_sens)
 	cam_pivot = $CamOffset/Camera
 	pass
 
@@ -30,7 +34,7 @@ func _physics_process(delta):
 	var move_buffer = Input.get_axis("down", "up") * Vector3.FORWARD + Input.get_axis("left", "right") * Vector3.RIGHT
 	move_buffer = move_buffer.normalized().rotated(Vector3.UP, cam_pivot.rotation.y)
 	var target_speed = walk_speed
-	if Input.is_action_pressed("sprint") or vclip: target_speed = run_speed
+	if Input.is_action_pressed("sprint") or vclip: target_speed = walk_speed * 2
 	var lin_vel_xz = lerp(lin_vel, move_buffer * target_speed, delta * ACCEL)
 	lin_vel = Vector3(lin_vel_xz.x, lin_vel.y, lin_vel_xz.z)
 	
@@ -44,8 +48,8 @@ func _physics_process(delta):
 	
 	if vclip: 
 		lin_vel.y = 0.0
-		if Input.is_action_pressed("sprint"): lin_vel.y -= run_speed
-		if Input.is_action_pressed("jump"): lin_vel.y += run_speed
+		if Input.is_action_pressed("sprint"): lin_vel.y -= walk_speed * 2
+		if Input.is_action_pressed("jump"): lin_vel.y += walk_speed * 2
 	
 	# Transform player
 	move_and_slide_with_snap(lin_vel, Vector3.UP * -0.1, Vector3.UP)
@@ -61,3 +65,10 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		if not app.is_menu_open():
 			look_buffer += event.relative
+
+func _on_SpeedSlider_value_changed(value):
+	app.get_node("MainMenu/VBoxContainer/SpeedSlider").hint_tooltip = str("Current Value: ", value)
+	walk_speed = value
+func _on_SensSlider_value_changed(value):
+	app.get_node("MainMenu/VBoxContainer/SensSlider").hint_tooltip = str("Current Value: ", look_sens)
+	look_sens = value

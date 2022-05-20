@@ -14,7 +14,8 @@ var _last_preset: String
 var _loaded_chunks: Dictionary = Dictionary()
 var _cached_chunks: Dictionary = Dictionary()
 export (int, 0, 64) var render_distance = 8 # Render radius in chunks
-const _RENDER_CACHING_SCALE = 2.0 # Multiplied by render distance for caching distance
+const _CHUNK_CACHING_SCALE = 2.0 # Multiplied by render distance for caching distance
+var _do_chunk_caching = false
 
 # Material
 export (Shader) var chunk_shader
@@ -62,6 +63,7 @@ func _init_menu_and_load_presets():
 	$MainMenu/VBoxContainer/RDSlider.value = render_distance
 	$MainMenu/VBoxContainer/CSSlider.value = chunk_size
 	$MainMenu/VBoxContainer/CDSlider.value = chunk_density
+	$MainMenu/VBoxContainer/ChunkCaching.pressed = _do_chunk_caching
 	$MainMenu/VBoxContainer/RDSlider.hint_tooltip = str("Current Value: ", render_distance)
 	$MainMenu/VBoxContainer/CSSlider.hint_tooltip = str("Current Value: ", chunk_size)
 	$MainMenu/VBoxContainer/CDSlider.hint_tooltip = str("Current Value: ", chunk_density)
@@ -170,7 +172,7 @@ func update_chunks(pos: Vector3, initial_load: bool = false):
 	# increase render distance in order to preload chunks to the cache
 	var rdist = render_distance
 	if initial_load: 
-		rdist *= _RENDER_CACHING_SCALE
+		if _do_chunk_caching: rdist *= _CHUNK_CACHING_SCALE
 		free_all_chunks()
 	
 	# Determine & load all chunks in render distance
@@ -188,7 +190,7 @@ func update_chunks(pos: Vector3, initial_load: bool = false):
 	# Iterate over cached chunks & free any that are too far away
 	for key in _cached_chunks:
 		var dist = _cached_chunks[key].chunk_pos.distance_to(Vector2(chunk_x, chunk_z))
-		if dist > render_distance * _RENDER_CACHING_SCALE:
+		if dist > render_distance * _CHUNK_CACHING_SCALE:
 			var _success = free_chunk(key)
 
 func load_chunk(chunk_pos: Vector2) -> String:
@@ -458,3 +460,5 @@ func _on_CSSlider_value_changed(value):
 func _on_CDSlider_value_changed(value):
 	$MainMenu/VBoxContainer/CDSlider.hint_tooltip = str("Current Value: ", value)
 	chunk_density = int(value)
+func _on_CheckBox_toggled(button_pressed):
+	_do_chunk_caching = button_pressed
