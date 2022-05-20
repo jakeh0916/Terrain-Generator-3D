@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://src/DynamicWorldGenerator.gd" type="Script" id=1]
+[ext_resource path="res://src/Player.gd" type="Script" id=2]
+[ext_resource path="res://mat/WaterShader.tres" type="Shader" id=3]
+[ext_resource path="res://mat/ChunkShader.tres" type="Shader" id=4]
+[ext_resource path="res://mat/SimpleNoise.png" type="Texture" id=5]
+
+[sub_resource type="CapsuleShape" id=1]
+radius = 0.5
+
+[node name="App" type="Node"]
+
+[node name="DynamicWorldGenerator" type="Node" parent="."]
+script = ExtResource( 1 )
+chunk_size = 16
+chunk_density = 64
+render_distance = 4
+chunk_shader = ExtResource( 4 )
+water_shader = ExtResource( 3 )
+simple_noise = ExtResource( 5 )
+player_path = NodePath("../Player")
+
+[node name="Menus" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Player" type="KinematicBody" parent="."]
+script = ExtResource( 2 )
+
+[node name="Collider" type="CollisionShape" parent="Player"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 1, 0 )
+shape = SubResource( 1 )
+
+[node name="CamOffset" type="Spatial" parent="Player"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+
+[node name="Camera" type="Camera" parent="Player/CamOffset"]
+near = 0.1
+far = 1000.0
+
+[node name="Sun" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -0.819152, 0.573576, 0, -0.573576, -0.819152, 0, 2, 0 )
