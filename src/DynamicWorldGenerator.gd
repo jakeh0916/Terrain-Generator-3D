@@ -2,11 +2,13 @@ extends Node
 class_name DynamicWorldGenerator
 
 # World
-export (int) var chunk_size: int         # Width of a chunk in units
-export (int) var chunk_density: int      # Faces per chunk
+export (int) var chunk_size: int    # Width of a chunk in units
+export (int) var chunk_density: int # Faces per chunk
 var _water_level: float
 var _noise_params: Array     # Values passed to OpenSimplexNoise for noise generation
 var _noise_generators: Array # OpenSimplexNoise objects for layering noise
+var _presets: Dictionary     # Preset generation values stored in res://presets.json
+var _last_preset: String
 
 # Rendering
 var _loaded_chunks: Dictionary = Dictionary()
@@ -22,39 +24,86 @@ var _chunk_material: ShaderMaterial
 var _water_material: ShaderMaterial
 
 # Player
-var _player: Spatial = null
-export (NodePath) var player_path = null
+onready var _player = $Player
 
-# Presets
-var _presets = {
-	"default": {
-		"noise_params": [
-			# Scale, octaves, period, persist
-			[25.0, 1.0, 64.0, 0.8],
-			[1.0, 1.0, 128.0, 0.9],
-			[1.0, 3.0, 24.0, 0.1]
-		],
-		"chunk_layer_noise": 5,
-		"chunk_layer_midlines": [3.5, 7],
-		"chunk_layer_colors": [
-			Color(1, 0.878431, 0.666667), 
-			Color(0.423529, 0.631373, 0.513726), 
-			Color(0.407843, 0.862745, 0.160784)
-		],
-		"water_level": 0.0,
-		"water_foam_movement": 1.0,
-		"water_color_fill": Color(0.203922, 1, 1),
-		"water_color_foam": Color(1, 1, 1)
-	},
-}
+# Menu
+var _menu_open
 
 ##################
 ### PROCESSING ###
 ##################
 
 func _ready():
-	if not _init_world_generator("default"):
-		print("ERROR: Preset not found or invalid!")
+	_init_menu_and_load_presets()
+	try_load_preset("default")
+
+func _process(_delta):
+	if not _player == null:
+		update_chunks(_player.translation)
+	if Input.is_action_just_pressed("toggle_fullscreen"):
+		OS.window_fullscreen = not OS.window_fullscreen
+	if Input.is_action_just_pressed("pause"): 
+		_toggle_menu()
+
+func _notification(n):
+	if n == NOTIFICATION_PREDELETE: 
+		free_all_cached_chunks()
+
+#############
+### MENUS ###
+#############
+
+func is_menu_open():
+	return _menu_open
+
+func _init_menu_and_load_presets():
+	_menu_open = false
+	$MainMenu.visible = false
+	$MainMenu/VBoxContainer/RDSlider.value = render_distance
+	$MainMenu/VBoxContainer/CSSlider.value = chunk_size
+	$MainMenu/VBoxContainer/CDSlider.value = chunk_density
+	$MainMenu/VBoxContainer/RDSlider.hint_tooltip = str("Current Value: ", render_distance)
+	$MainMenu/VBoxContainer/CSSlider.hint_tooltip = str("Current Value: ", chunk_size)
+	$MainMenu/VBoxContainer/CDSlider.hint_tooltip = str("Current Value: ", chunk_density)
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	var presets_file = File.new()
+	if not presets_file.file_exists("res://presets.json"):
+		print("FATAL: Cannot find presets file in res://presets.json!")
+		get_tree().quit()
+	presets_file.open("res://presets.json", File.READ)
+	var data_json = JSON.parse(presets_file.get_as_text())
+	_presets = data_json.result
+	presets_file.close()
+	
+	# Add buttons for presets
+	var button_container = $MainMenu/VBoxContainer
+	var button_start = $MainMenu/VBoxContainer/HSeparator
+	for key in _presets:
+		var preset_button = Button.new()
+		preset_button.text = key
+		preset_button.connect("pressed", self, "try_load_preset", [key])
+		button_container.add_child_below_node(button_start, preset_button)
+
+func _toggle_menu():
+	if _menu_open:
+		_menu_open = false
+		$MainMenu.visible = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	else:
+		_menu_open = true
+		$MainMenu.visible = true
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+##################
+### WORLD INIT ###
+##################
+
+func try_load_preset(preset_name: String):
+	_last_preset = preset_name
+	var ok = _init_world_generator(preset_name)
+	if not ok:
+		print("FATAL: Cannot find preset or preset is invalid!")
 		get_tree().quit()
 
 func _init_world_generator(preset_name: String) -> bool:
@@ -80,7 +129,7 @@ func _init_world_generator(preset_name: String) -> bool:
 		var color_param = str("color_", i)
 		if i < num_midlines:
 			_chunk_material.set_shader_param(midline_param, preset["chunk_layer_midlines"][i])
-		_chunk_material.set_shader_param(color_param, Color(preset["chunk_layer_colors"][i]))
+		_chunk_material.set_shader_param(color_param, array_to_color(preset["chunk_layer_colors"][i]))
 	_chunk_material.set_shader_param("num_midlines", num_midlines)
 	_chunk_material.set_shader_param("noise_offset", simple_noise)
 	_chunk_material.set_shader_param("noise_scale", preset["chunk_layer_noise"])
@@ -88,8 +137,8 @@ func _init_world_generator(preset_name: String) -> bool:
 	# Set up water material
 	_water_material = ShaderMaterial.new()
 	_water_material.shader = water_shader
-	_water_material.set_shader_param("main_color", preset["water_color_fill"])
-	_water_material.set_shader_param("intersection_color", preset["water_color_foam"])
+	_water_material.set_shader_param("main_color", array_to_color(preset["water_color_fill"]))
+	_water_material.set_shader_param("intersection_color", array_to_color(preset["water_color_foam"]))
 	_water_material.set_shader_param("foam_movement", preset["water_foam_movement"])
 	_water_material.set_shader_param("displ_tex", simple_noise)
 	
@@ -97,20 +146,11 @@ func _init_world_generator(preset_name: String) -> bool:
 	setup_noise_generators()
 	
 	# Initialize player
-	if _player == null:
-		_player = get_node(player_path)
 	_player.translation = Vector3(0, 50, 0)
 	
 	# Initialize the world
 	update_chunks(_player.translation, true)
 	return true
-
-func _process(_delta):
-	update_chunks(_player.translation)
-
-func _notification(n):
-	if n == NOTIFICATION_PREDELETE: 
-		free_all_cached_chunks()
 
 #######################
 ### CHUNK RENDERING ###
@@ -359,7 +399,7 @@ func create_heightmap_collider(pos: Vector3, heights: PoolRealArray) -> StaticBo
 	collision_shape.shape = height_map
 	
 	var static_body = StaticBody.new()
-	static_body.translation = Vector3(pos.x + chunk_size / 2, pos.y, pos.z + chunk_size /2)
+	static_body.translation = Vector3(pos.x + chunk_size / 2.0, pos.y, pos.z + chunk_size / 2.0)
 	static_body.rotation_degrees = Vector3(0, 90, 0)
 	var scale = float(chunk_size) / float(chunk_density)
 	static_body.scale = Vector3(-scale, 1, scale)
@@ -377,6 +417,7 @@ func get_chunk_key(chunk_pos: Vector2) -> String:
 ########################
 
 func setup_noise_generators():
+	_noise_generators = Array()
 	for params in _noise_params:
 		var ng = OpenSimplexNoise.new()
 		ng.seed = randi()
@@ -392,6 +433,28 @@ func sample_noise(x: float, z: float) -> float:
 	var y = 0.0
 	var i = 0
 	for ng in _noise_generators:
-		y += ng.get_noise_2d(x, z) * _noise_params[0][0]
+		y += ng.get_noise_2d(x, z) * _noise_params[i][0]
 		i += 1
 	return y
+
+###############
+### GENERAL ###
+###############
+
+func array_to_color(arr: Array) -> Color:
+	if arr.size() < 3: return Color.black
+	return Color(arr[0], arr[1], arr[2])
+
+func _on_Reload_pressed():
+	try_load_preset(_last_preset)
+func _on_Leave_pressed():
+	get_tree().quit()
+func _on_RDSlider_value_changed(value):
+	$MainMenu/VBoxContainer/RDSlider.hint_tooltip = str("Current Value: ", value)
+	render_distance = int(value)
+func _on_CSSlider_value_changed(value):
+	$MainMenu/VBoxContainer/CSSlider.hint_tooltip = str("Current Value: ", value)
+	chunk_size = int(value)
+func _on_CDSlider_value_changed(value):
+	$MainMenu/VBoxContainer/CDSlider.hint_tooltip = str("Current Value: ", value)
+	chunk_density = int(value)

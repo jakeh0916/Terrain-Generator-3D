@@ -10,23 +10,14 @@
 radius = 0.5
 
 [node name="App" type="Node"]
-
-[node name="DynamicWorldGenerator" type="Node" parent="."]
+pause_mode = 2
 script = ExtResource( 1 )
 chunk_size = 16
-chunk_density = 64
+chunk_density = 4
 render_distance = 4
 chunk_shader = ExtResource( 4 )
 water_shader = ExtResource( 3 )
 simple_noise = ExtResource( 5 )
-player_path = NodePath("../Player")
-
-[node name="Menus" type="Control" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Player" type="KinematicBody" parent="."]
 script = ExtResource( 2 )
@@ -44,3 +35,173 @@ far = 1000.0
 
 [node name="Sun" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, -0.819152, 0.573576, 0, -0.573576, -0.819152, 0, 2, 0 )
+
+[node name="InfoMenu" type="PanelContainer" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -186.0
+margin_top = -181.8
+margin_bottom = 0.200012
+grow_horizontal = 0
+grow_vertical = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="InfoMenu"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 179.0
+margin_bottom = 175.0
+
+[node name="Title" type="Label" parent="InfoMenu/VBoxContainer"]
+margin_right = 172.0
+margin_bottom = 14.0
+text = "SIMPLE INFINITE TERRAIN"
+
+[node name="HSeparator1" type="HSeparator" parent="InfoMenu/VBoxContainer"]
+margin_top = 18.0
+margin_right = 172.0
+margin_bottom = 22.0
+
+[node name="HSplitContainer" type="HSplitContainer" parent="InfoMenu/VBoxContainer"]
+margin_top = 26.0
+margin_right = 172.0
+margin_bottom = 142.0
+
+[node name="Key" type="Label" parent="InfoMenu/VBoxContainer/HSplitContainer"]
+margin_right = 44.0
+margin_bottom = 116.0
+text = "Escape
+F
+
+WASD
+Space
+Shift
+V"
+align = 1
+
+[node name="Name" type="Label" parent="InfoMenu/VBoxContainer/HSplitContainer"]
+margin_left = 56.0
+margin_right = 172.0
+margin_bottom = 116.0
+text = "Toggle Main Menu
+Toggle Fullscreen
+
+Move
+Jump or Fly Up
+Sprint or Fly Down
+Toggle Flying"
+
+[node name="HSeparator2" type="HSeparator" parent="InfoMenu/VBoxContainer"]
+margin_top = 146.0
+margin_right = 172.0
+margin_bottom = 150.0
+
+[node name="Label" type="Label" parent="InfoMenu/VBoxContainer"]
+margin_top = 154.0
+margin_right = 172.0
+margin_bottom = 168.0
+text = "Created by Jake Huseman"
+
+[node name="MainMenu" type="PanelContainer" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -327.888
+margin_top = -155.8
+margin_right = -195.888
+margin_bottom = 0.199951
+grow_horizontal = 0
+grow_vertical = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 125.0
+margin_bottom = 199.0
+grow_vertical = 0
+
+[node name="WorldPresetsTitle" type="Label" parent="MainMenu/VBoxContainer"]
+margin_right = 117.0
+margin_bottom = 14.0
+text = "WORLD PRESETS"
+align = 1
+
+[node name="HSeparator" type="HSeparator" parent="MainMenu/VBoxContainer"]
+margin_top = 18.0
+margin_right = 117.0
+margin_bottom = 22.0
+
+[node name="HSeparatorOptions" type="HSeparator" parent="MainMenu/VBoxContainer"]
+margin_top = 26.0
+margin_right = 117.0
+margin_bottom = 30.0
+
+[node name="RDLabel" type="Label" parent="MainMenu/VBoxContainer"]
+margin_top = 34.0
+margin_right = 117.0
+margin_bottom = 48.0
+text = "Render Distance:"
+
+[node name="RDSlider" type="HSlider" parent="MainMenu/VBoxContainer"]
+margin_top = 52.0
+margin_right = 117.0
+margin_bottom = 68.0
+min_value = 2.0
+max_value = 32.0
+value = 2.0
+
+[node name="CSLabel" type="Label" parent="MainMenu/VBoxContainer"]
+margin_top = 72.0
+margin_right = 117.0
+margin_bottom = 86.0
+text = "Chunk Size:"
+
+[node name="CSSlider" type="HSlider" parent="MainMenu/VBoxContainer"]
+margin_top = 90.0
+margin_right = 117.0
+margin_bottom = 106.0
+min_value = 1.0
+max_value = 128.0
+value = 2.0
+
+[node name="CDLabel" type="Label" parent="MainMenu/VBoxContainer"]
+margin_top = 110.0
+margin_right = 117.0
+margin_bottom = 124.0
+text = "Chunk Density:"
+
+[node name="CDSlider" type="HSlider" parent="MainMenu/VBoxContainer"]
+margin_top = 128.0
+margin_right = 117.0
+margin_bottom = 144.0
+min_value = 1.0
+max_value = 64.0
+value = 2.0
+
+[node name="Reload" type="Button" parent="MainMenu/VBoxContainer"]
+margin_top = 148.0
+margin_right = 117.0
+margin_bottom = 168.0
+hint_tooltip = "Changing these render settings can cause the world to turn into mush. Use this button to reload from scratch."
+text = "Reload"
+
+[node name="Leave" type="Button" parent="MainMenu/VBoxContainer"]
+margin_top = 172.0
+margin_right = 117.0
+margin_bottom = 192.0
+custom_colors/font_color = Color( 0.682353, 0.768627, 1, 1 )
+text = "Quit"
+
+[connection signal="value_changed" from="MainMenu/VBoxContainer/RDSlider" to="." method="_on_RDSlider_value_changed"]
+[connection signal="value_changed" from="MainMenu/VBoxContainer/CSSlider" to="." method="_on_CSSlider_value_changed"]
+[connection signal="value_changed" from="MainMenu/VBoxContainer/CDSlider" to="." method="_on_CDSlider_value_changed"]
+[connection signal="pressed" from="MainMenu/VBoxContainer/Reload" to="." method="_on_Reload_pressed"]
+[connection signal="pressed" from="MainMenu/VBoxContainer/Leave" to="." method="_on_Leave_pressed"]

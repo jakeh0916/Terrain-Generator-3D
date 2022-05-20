@@ -11,21 +11,19 @@ export (float) var walk_speed = 3.0
 export (float) var run_speed  = 6.5
 export (float) var jump_force = 10.0
 
+var vclip = true
 var lin_vel = Vector3()
 var look_buffer = Vector2()
 
 var cam_pivot;
 
+onready var app = get_tree().root.get_child(0)
+
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	cam_pivot = $CamOffset/Camera
 	pass
 
-var vclip = false
 func _physics_process(delta):
-	if Input.is_action_just_pressed("toggle_fullscreen"):
-		OS.window_fullscreen = not OS.window_fullscreen
-	if Input.is_action_just_pressed("quit"): get_tree().quit()
 	if Input.is_action_just_pressed("v"): vclip = not vclip
 	
 	# Calculate linear velocity xz
@@ -61,4 +59,5 @@ func _physics_process(delta):
 
 func _input(event):
 	if event is InputEventMouseMotion:
-	   look_buffer += event.relative
+		if not app.is_menu_open():
+			look_buffer += event.relative
