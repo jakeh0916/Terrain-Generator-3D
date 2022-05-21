@@ -7,7 +7,9 @@ class_name TerrainGenerator
 # 2. Add chunk unloading
 # 3. Clean up & Ship
 
+var worker
 var target = null
+var loaded_chunks
 
 ## Rendering
 var chunk_size
@@ -15,7 +17,6 @@ var chunk_density
 var render_distance
 
 ## Terrain
-var loaded_chunks
 var chunk_material
 var water_material
 var water_level
@@ -23,7 +24,9 @@ var noise
 var noise_scale
 
 func _init(target_node: Spatial, render_opts: Dictionary, terrain_opts: Dictionary):
+	worker = Thread.new()
 	target = target_node
+	loaded_chunks = {}
 	
 	## Unpack render options
 	render_distance = render_opts["render_distance"]
@@ -31,39 +34,57 @@ func _init(target_node: Spatial, render_opts: Dictionary, terrain_opts: Dictiona
 	chunk_density = render_opts["chunk_density"]
 	
 	## Unpack terrain options
-	loaded_chunks = {}
-	noise = OpenSimplexNoise.new()
 	chunk_material = terrain_opts["chunk_material"]
 	water_material = terrain_opts["water_material"]
 	water_level = terrain_opts["water_level"]
+
+	## Unpack terrain noise options
+	noise = OpenSimplexNoise.new()
 	noise.octaves = terrain_opts["noise_octaves"]
 	noise.period = terrain_opts["noise_period"]
 	noise_scale = terrain_opts["noise_scale"]
-
-func _process(_delta):
-	if not target == null:
-		update_chunks(target.translation)
+	
+	worker.start(self, "update_chunks")
 
 ## Chunk Handling
 
-func update_chunks(position: Vector3):
-	if position.x < 0: position.x -= chunk_size
-	if position.z < 0: position.z -= chunk_size
-	var chunk_x: int = int(position.x) / chunk_size
-	var chunk_z: int = int(position.z) / chunk_size
-	
-	for ix in range(chunk_x - render_distance, chunk_x + render_distance + 1):
-		for iz in range(chunk_z - render_distance, chunk_z + render_distance + 1):
-			make_chunk(Vector2(ix, iz))
+class Chunk extends Node:
+	var chunk_position
+	func _init(_chunk_position: Vector2, chunk_mesh: MeshInstance):
+		chunk_position = _chunk_position
+		add_child(chunk_mesh)
+
+func update_chunks():
+	while true:
+		var position = target.translation
+		if position.x < 0: position.x -= chunk_size
+		if position.z < 0: position.z -= chunk_size
+		var chunk_x: int = int(position.x) / chunk_size
+		var chunk_z: int = int(position.z) / chunk_size
+		
+		for ix in range(chunk_x - render_distance, chunk_x + render_distance + 1):
+			for iz in range(chunk_z - render_distance, chunk_z + render_distance + 1):
+				if Vector2(ix, iz).distance_to(Vector2(chunk_x, chunk_z)) <= render_distance:
+					make_chunk(Vector2(ix, iz))
+		for key in loaded_chunks:
+			if loaded_chunks[key].chunk_position.distance_to(Vector2(chunk_x, chunk_z)) > render_distance:
+				free_chunk(key)
 
 func make_chunk(chunk_position: Vector2):
 	var key = make_chunk_key(chunk_position)
 	if loaded_chunks.has(key): return
 
 	var position = Vector3(chunk_position.x * chunk_size, 0, chunk_position.y * chunk_size)
-	var chunk = make_chunk_mesh(position)
+	var chunk_mesh = make_chunk_mesh(position)
+	
+	var chunk = Chunk.new(chunk_position, chunk_mesh)
 	loaded_chunks[key] = chunk
 	add_child(chunk)
+
+func free_chunk(key: String):
+	var chunk = loaded_chunks[key]
+	var erased = loaded_chunks.erase(key)
+	if erased: chunk.queue_free()
 
 func make_chunk_mesh(position: Vector3) -> MeshInstance:
 	var arr = []
@@ -120,7 +141,6 @@ func make_chunk_mesh(position: Vector3) -> MeshInstance:
 	mesh_instance.mesh.surface_set_material(0, chunk_material)
 	
 	if needs_water_mesh: mesh_instance.add_child(make_water_mesh(position))
-	
 	return mesh_instance
 
 func make_water_mesh(position: Vector3) -> MeshInstance:

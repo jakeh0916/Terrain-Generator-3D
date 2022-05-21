@@ -8,6 +8,10 @@ export (Material) var chunk_material
 export (Material) var water_material
 export (float) var water_level = 0
 
+export (int) var noise_octaves = 9
+export (int) var noise_period = 120
+export (int) var noise_scale = 50
+
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
@@ -21,10 +25,11 @@ func _ready():
 		"chunk_material": chunk_material,
 		"water_material": water_material,
 		"water_level": water_level,
-		"noise_octaves": 9,
-		"noise_period": 120,
-		"noise_scale": 50
+		"noise_octaves": noise_octaves,
+		"noise_period": noise_period,
+		"noise_scale": noise_scale
 	}
+	
 	var terrain_generator = TerrainGenerator.new(target, render_opts, terrain_opts)
 	add_child(terrain_generator)
 

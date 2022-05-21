@@ -2,7 +2,7 @@ extends Camera
 
 const ACCEL = 10.0
 export (float) var look_sens  = 0.1
-export (float) var speed = 30.0
+export (float) var speed = 60.0
 
 var lin_vel = Vector3()
 var look_buffer = Vector2()
