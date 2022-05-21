@@ -148,3 +148,64 @@ func sample_noise(x: int, z: int) -> float:
 
 static func make_chunk_key(chunk_position: Vector2) -> String:
 	return str(chunk_position.x, ",", chunk_position.y)
+
+func threaded_make_chunk_mesh(userdata: Array):
+	var _position = userdata[0]
+	var _chunk_size = userdata[1]
+	var _chunk_density = userdata[2]
+	var _chunk_material = userdata[3]
+	var _noise = userdata[4]
+	var _noise_scale = userdata[5]
+	
+	var arr = []
+	arr.resize(Mesh.ARRAY_MAX)
+	
+	var needs_water_mesh = false
+	var verts = PoolVector3Array()
+	var norms = PoolVector3Array()
+	var uvs   = PoolVector2Array()
+	var inds  = PoolIntArray()
+	
+	var vert_step = float(_chunk_size) / _chunk_density
+	var uv_step   = 1.0 / _chunk_density 
+	
+	for x in _chunk_density + 1:
+		for z in _chunk_density + 1:
+			var vert = Vector3(_position.x + x * vert_step, 0.0, _position.z + z * vert_step)
+			var uv = Vector2(1.0 - x * uv_step, 1.0 - z * uv_step)
+			vert.y = sample_noise(vert.x, vert.z)
+			
+			var top = vert - Vector3(vert.x, _noise.get_noise_2d(vert.x, vert.z + vert_step) * _noise_scale, vert.z + vert_step)
+			var right = vert - Vector3(vert.x + vert_step, _noise.get_noise_2d(vert.x + vert_step * _noise_scale, vert.z), vert.z)
+			var norm = top.cross(right).normalized()
+			
+			verts.push_back(vert)
+			norms.push_back(norm)
+			uvs.push_back(uv)
+			
+			# Make & index a clockwise face from verts a, b, c, d
+			if x < _chunk_density and z < _chunk_density:
+				var a = z + x * (_chunk_density + 1)
+				var b = a + 1
+				var d = (_chunk_density + 1) * (x + 1) + z
+				var c = d + 1
+				
+				inds.push_back(d) 
+				inds.push_back(b)
+				inds.push_back(a)
+				
+				inds.push_back(d) 
+				inds.push_back(c)
+				inds.push_back(b)
+	
+	arr[Mesh.ARRAY_VERTEX] = verts
+	arr[Mesh.ARRAY_TEX_UV] = uvs
+	arr[Mesh.ARRAY_NORMAL] = norms
+	arr[Mesh.ARRAY_INDEX]  = inds
+	
+	var mesh_instance = MeshInstance.new()
+	mesh_instance.mesh = Mesh.new()
+	mesh_instance.mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	mesh_instance.mesh.surface_set_material(0, _chunk_material)
+	
+	call_deferred("add_child", mesh_instance)

@@ -8,9 +8,9 @@
 [node name="App" type="Spatial"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.886118, 0, 0.962273 )
 script = ExtResource( 2 )
-chunk_density = 24
 chunk_material = ExtResource( 3 )
 water_material = ExtResource( 4 )
+noise_scale = 200
 
 [node name="Camera" type="Camera" parent="."]
 near = 0.5

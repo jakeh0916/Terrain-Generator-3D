@@ -4,10 +4,9 @@ export (int) var render_distance = 16
 export (int) var chunk_size = 64
 export (int) var chunk_density = 16
 
-export (Material) var chunk_material
-export (Material) var water_material
+export (Material) var chunk_material = null
+export (Material) var water_material = null
 export (float) var water_level = 0
-
 export (int) var noise_octaves = 9
 export (int) var noise_period = 120
 export (int) var noise_scale = 50

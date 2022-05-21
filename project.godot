@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "TerrainGenerator",
 "language": "GDScript",
-"path": "res://src/TerrainGenerator.gd"
+"path": "res://src/TerrainGeneratorThreaded.gd"
 } ]
 _global_script_class_icons={
 "TerrainGenerator": ""
