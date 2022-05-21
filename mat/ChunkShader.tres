@@ -2,68 +2,31 @@
 
 [resource]
 code = "shader_type spatial;
-render_mode specular_toon;
+render_mode vertex_lighting;
 
-// Specifiy 0-7 midlines
-uniform int num_midlines; 
+uniform vec4 depth_color : hint_color;
+uniform vec4 land_color : hint_color;
+uniform vec4 shore_color : hint_color;
 
-uniform float midline_0; 
-uniform float midline_1;
-uniform float midline_2;
-uniform float midline_3;
-uniform float midline_4;
-uniform float midline_5;
-uniform float midline_6;
-
-uniform vec4 color_0;
-uniform vec4 color_1;
-uniform vec4 color_2;
-uniform vec4 color_3;
-uniform vec4 color_4;
-uniform vec4 color_5;
-uniform vec4 color_6;
-uniform vec4 color_7;
-
-uniform sampler2D noise_offset;
-uniform float noise_scale = 0.1;
-
-varying vec4 interp_pos;
-varying vec3 interp_norm;
+varying vec3 world_position;
 
 void vertex() {
-	interp_norm = NORMAL;
-	interp_pos = (WORLD_MATRIX * vec4(VERTEX.x, VERTEX.y, VERTEX.z, 1.0));
+	world_position = (WORLD_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 void fragment() {
-	float y = interp_pos.y + (texture(noise_offset, abs(interp_pos.xz / 400.0)).r - 0.5) * 2.0 * noise_scale;
-	
-	if (y < midline_0 || num_midlines == 0) {
-		ALBEDO = color_0.rgb;
-	} else if (y < midline_1 || num_midlines == 1) {
-		ALBEDO = color_1.rgb;
-	} else if (y < midline_2 || num_midlines == 2) {
-		ALBEDO = color_2.rgb;
-	} else if (y < midline_3 || num_midlines == 3) {
-		ALBEDO = color_3.rgb;
-	} else if (y < midline_4 || num_midlines == 4) {
-		ALBEDO = color_4.rgb;
-	} else if (y < midline_5 || num_midlines == 5) {
-		ALBEDO = color_5.rgb;
-	} else if (y < midline_6 || num_midlines == 6) {
-		ALBEDO = color_6.rgb;
-	} else { ALBEDO = color_7.rgb; }
+	if (world_position.y < -20.0) {
+		ALBEDO = depth_color.rgb;
+	} else if (world_position.y < -5.0) {
+		float m = (world_position.y + 20.0) / 15.0;
+		ALBEDO = mix(depth_color.rgb, shore_color.rgb, m);
+	} else if (world_position.y < 0.0) {
+		ALBEDO = shore_color.rgb;
+	} else if (world_position.y < 5.0) {
+		float m = world_position.y / 5.0;
+		ALBEDO = mix(shore_color.rgb, land_color.rgb, m);
+	} else {
+		ALBEDO = land_color.rgb;
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
 "

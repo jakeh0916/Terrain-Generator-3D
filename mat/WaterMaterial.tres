@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+
+[ext_resource path="res://mat/WaterShader.tres" type="Shader" id=1]
+
+[resource]
+shader = ExtResource( 1 )
+shader_param/main_color = Color( 0, 1, 0.976471, 0.262745 )
+shader_param/intersection_color = Color( 0.980392, 1, 1, 0.894118 )
+shader_param/foam_movement = null
+shader_param/intersection_max_threshold = 1.0
+shader_param/displ_amount = 0.6
+shader_param/near = 1.0
+shader_param/far = 8000.0

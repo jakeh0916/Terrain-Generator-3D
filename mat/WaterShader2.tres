@@ -1,0 +1,12 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type spatial;
+
+uniform vec4 water_color : hint_color;
+
+void fragment()
+{
+	ALBEDO = water_color.rgb;
+	//ALPHA = water_color.a
+}"

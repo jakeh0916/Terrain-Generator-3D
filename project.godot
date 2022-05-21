@@ -8,10 +8,20 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Node",
+"class": "TerrainGenerator",
+"language": "GDScript",
+"path": "res://src/TerrainGenerator.gd"
+} ]
+_global_script_class_icons={
+"TerrainGenerator": ""
+}
+
 [application]
 
 config/name="InfiniteTerrain3D"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://App.tscn"
 config/icon="res://icon.png"
 
 [display]
