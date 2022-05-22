@@ -4,6 +4,7 @@ export (int) var render_distance = 16
 export (int) var chunk_size = 64
 export (int) var chunk_density = 16
 
+export (bool) var make_collider = false
 export (Material) var chunk_material = null
 export (Material) var water_material = null
 export (float) var water_level = 0
@@ -14,13 +15,14 @@ export (int) var noise_scale = 50
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
-	var target = $Camera
+	var target = $SimplePlayer
 	var render_opts = {
 		"render_distance": render_distance,
 		"chunk_size": chunk_size,
 		"chunk_density": chunk_density
 	}
 	var terrain_opts = {
+		"make_collider": make_collider,
 		"chunk_material": chunk_material,
 		"water_material": water_material,
 		"water_level": water_level,
@@ -29,7 +31,7 @@ func _ready():
 		"noise_scale": noise_scale
 	}
 	
-	var terrain_generator = TerrainGeneratorThreaded.new(target, render_opts, terrain_opts)
+	var terrain_generator = TerrainGeneratorAsync.new(target, render_opts, terrain_opts)
 	add_child(terrain_generator)
 
 func _process(_delta):
