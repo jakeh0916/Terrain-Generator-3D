@@ -1,0 +1,44 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type spatial;
+render_mode vertex_lighting;
+
+uniform sampler2D depth_tex : hint_albedo;
+uniform sampler2D shore_tex : hint_albedo;
+uniform sampler2D land_tex : hint_albedo;
+uniform sampler2D cliff_tex : hint_albedo;
+
+uniform vec4 depth_color : hint_color;
+uniform vec4 shore_color : hint_color;
+uniform vec4 land_color : hint_color;
+uniform vec4 cliff_color : hint_color;
+
+varying vec3 interp_world_pos;
+varying vec3 interp_norm;
+
+void vertex() {
+	interp_world_pos = (WORLD_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	interp_norm = NORMAL;
+}
+
+void fragment() {
+	if (interp_world_pos.y < -20.0) {
+		ALBEDO = depth_color.rgb;
+	} else if (interp_world_pos.y < -5.0) {
+		float m = (interp_world_pos.y + 20.0) / 15.0;
+		ALBEDO = mix(depth_color.rgb, shore_color.rgb, m);
+	} else if (interp_world_pos.y < 0.0) {
+		ALBEDO = shore_color.rgb;
+	} else if (interp_world_pos.y < 5.0) {
+		float m = interp_world_pos.y / 5.0;
+		ALBEDO = mix(shore_color.rgb, land_color.rgb, m);
+	} else {
+		ALBEDO = land_color.rgb;
+		if (interp_norm.y >= 0.0 && interp_norm.y < 0.3) {
+			float s = interp_norm.y / 0.3;
+			ALBEDO = mix(cliff_color.rgb, land_color.rgb, s);
+		}
+	}
+}
+"

@@ -7,8 +7,6 @@
 
 [node name="App" type="Spatial"]
 script = ExtResource( 2 )
-render_distance = 32
-chunk_density = 64
 chunk_material = ExtResource( 3 )
 water_material = ExtResource( 4 )
 noise_period = 500

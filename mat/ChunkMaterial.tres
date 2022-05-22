@@ -1,10 +1,23 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+[gd_resource type="ShaderMaterial" load_steps=10 format=2]
 
 [ext_resource path="res://mat/ChunkShader.tres" type="Shader" id=1]
+[ext_resource path="res://mat/cliff_norm.png" type="Texture" id=2]
+[ext_resource path="res://mat/sand_norm.png" type="Texture" id=3]
+[ext_resource path="res://mat/depth_tex.png" type="Texture" id=4]
+[ext_resource path="res://mat/grass_tex.png" type="Texture" id=5]
+[ext_resource path="res://mat/depth_norm.png" type="Texture" id=6]
+[ext_resource path="res://mat/moss_norm.png" type="Texture" id=7]
+[ext_resource path="res://mat/sand_tex.png" type="Texture" id=8]
+[ext_resource path="res://mat/cliff_tex.png" type="Texture" id=9]
 
 [resource]
 shader = ExtResource( 1 )
-shader_param/depth_color = Color( 0.0823529, 0.0784314, 0.152941, 1 )
-shader_param/shore_color = Color( 0.737255, 0.803922, 0.490196, 1 )
-shader_param/land_color = Color( 0.294118, 0.576471, 0.262745, 1 )
-shader_param/cliff_color = Color( 0.572549, 0.572549, 0.572549, 1 )
+shader_param/uv_scale = 4.0
+shader_param/depth_tex = ExtResource( 4 )
+shader_param/shore_tex = ExtResource( 8 )
+shader_param/grass_tex = ExtResource( 5 )
+shader_param/cliff_tex = ExtResource( 9 )
+shader_param/depth_norm = ExtResource( 6 )
+shader_param/shore_norm = ExtResource( 3 )
+shader_param/grass_norm = ExtResource( 7 )
+shader_param/cliff_norm = ExtResource( 2 )
