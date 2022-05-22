@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/sand_norm.png-2c645593c6a168a9a4fda9af375b8634.s3tc.stex"
-path.etc2="res://.import/sand_norm.png-2c645593c6a168a9a4fda9af375b8634.etc2.stex"
+path.s3tc="res://.import/depth_norm.png-2c99118af912b43c1cac6310c5437a1e.s3tc.stex"
+path.etc2="res://.import/depth_norm.png-2c99118af912b43c1cac6310c5437a1e.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://mat/sand_norm.png"
-dest_files=[ "res://.import/sand_norm.png-2c645593c6a168a9a4fda9af375b8634.s3tc.stex", "res://.import/sand_norm.png-2c645593c6a168a9a4fda9af375b8634.etc2.stex" ]
+source_file="res://tex/depth_norm.png"
+dest_files=[ "res://.import/depth_norm.png-2c99118af912b43c1cac6310c5437a1e.s3tc.stex", "res://.import/depth_norm.png-2c99118af912b43c1cac6310c5437a1e.etc2.stex" ]
 
 [params]
 

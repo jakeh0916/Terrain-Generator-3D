@@ -4,7 +4,7 @@ export (int) var render_distance = 16
 export (int) var chunk_size = 64
 export (int) var chunk_density = 16
 
-export (bool) var make_collider = false
+export (bool) var needs_collider = false
 export (Material) var chunk_material = null
 export (Material) var water_material = null
 export (float) var water_level = 0
@@ -22,7 +22,7 @@ func _ready():
 		"chunk_density": chunk_density
 	}
 	var terrain_opts = {
-		"make_collider": make_collider,
+		"needs_collider": needs_collider,
 		"chunk_material": chunk_material,
 		"water_material": water_material,
 		"water_level": water_level,
@@ -38,4 +38,4 @@ func _process(_delta):
 	if Input.is_action_just_pressed("toggle_fullscreen"):
 		OS.window_fullscreen = not OS.window_fullscreen
 	if Input.is_action_just_pressed("pause"): 
-		get_tree().quit()
+		get_tree().notification(MainLoop.NOTIFICATION_WM_QUIT_REQUEST)

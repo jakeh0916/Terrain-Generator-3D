@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/cliff_norm.png-1c619fc1f22122afb5f917a775af62a2.s3tc.stex"
-path.etc2="res://.import/cliff_norm.png-1c619fc1f22122afb5f917a775af62a2.etc2.stex"
+path.s3tc="res://.import/orange.png-a747449cd828ef1249aff122253382b8.s3tc.stex"
+path.etc2="res://.import/orange.png-a747449cd828ef1249aff122253382b8.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://mat/cliff_norm.png"
-dest_files=[ "res://.import/cliff_norm.png-1c619fc1f22122afb5f917a775af62a2.s3tc.stex", "res://.import/cliff_norm.png-1c619fc1f22122afb5f917a775af62a2.etc2.stex" ]
+source_file="res://tex/orange.png"
+dest_files=[ "res://.import/orange.png-a747449cd828ef1249aff122253382b8.s3tc.stex", "res://.import/orange.png-a747449cd828ef1249aff122253382b8.etc2.stex" ]
 
 [params]
 

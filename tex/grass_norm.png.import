@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/depth_tex.png-b39f4eadd0ddf54f78ca220341453d24.s3tc.stex"
-path.etc2="res://.import/depth_tex.png-b39f4eadd0ddf54f78ca220341453d24.etc2.stex"
+path.s3tc="res://.import/grass_norm.png-9afe85807ea7e14087ba5fe8ed3d5b3d.s3tc.stex"
+path.etc2="res://.import/grass_norm.png-9afe85807ea7e14087ba5fe8ed3d5b3d.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://mat/depth_tex.png"
-dest_files=[ "res://.import/depth_tex.png-b39f4eadd0ddf54f78ca220341453d24.s3tc.stex", "res://.import/depth_tex.png-b39f4eadd0ddf54f78ca220341453d24.etc2.stex" ]
+source_file="res://tex/grass_norm.png"
+dest_files=[ "res://.import/grass_norm.png-9afe85807ea7e14087ba5fe8ed3d5b3d.s3tc.stex", "res://.import/grass_norm.png-9afe85807ea7e14087ba5fe8ed3d5b3d.etc2.stex" ]
 
 [params]
 

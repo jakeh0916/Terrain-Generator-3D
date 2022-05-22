@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/moss_norm.png-609c96997ff30f5e6316856a4c9351d2.s3tc.stex"
-path.etc2="res://.import/moss_norm.png-609c96997ff30f5e6316856a4c9351d2.etc2.stex"
+path.s3tc="res://.import/depth_tex.png-c3648a88a0aae064ed38db541dbba6ec.s3tc.stex"
+path.etc2="res://.import/depth_tex.png-c3648a88a0aae064ed38db541dbba6ec.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://mat/moss_norm.png"
-dest_files=[ "res://.import/moss_norm.png-609c96997ff30f5e6316856a4c9351d2.s3tc.stex", "res://.import/moss_norm.png-609c96997ff30f5e6316856a4c9351d2.etc2.stex" ]
+source_file="res://tex/depth_tex.png"
+dest_files=[ "res://.import/depth_tex.png-c3648a88a0aae064ed38db541dbba6ec.s3tc.stex", "res://.import/depth_tex.png-c3648a88a0aae064ed38db541dbba6ec.etc2.stex" ]
 
 [params]
 

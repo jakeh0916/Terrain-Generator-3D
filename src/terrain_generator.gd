@@ -12,7 +12,7 @@ func _init(target: Spatial, render_opts: Dictionary, generation_opts: Dictionary
 	_chunk_density = render_opts["chunk_density"]
 	
 	## Unpack terrain generation options
-	_make_collider = generation_opts["make_collider"] 
+	_needs_collider = generation_opts["needs_collider"]
 	_chunk_material = generation_opts["chunk_material"]
 	_water_material = generation_opts["water_material"]
 	_water_level = generation_opts["water_level"]
@@ -43,34 +43,33 @@ func generate() -> void:
 		
 		for ix in range(chunk_x - _render_distance, chunk_x + _render_distance + 1):
 			for iz in range(chunk_z - _render_distance, chunk_z + _render_distance + 1):
-				if Vector2(ix, iz).distance_to(Vector2(chunk_x, chunk_z)) <= _render_distance:
-					make_chunk(Vector2(ix, iz))
+				var chunk_position = Vector2(ix, iz)
+				if chunk_position.distance_to(Vector2(chunk_x, chunk_z)) > _render_distance: 
+					continue
+				if _loaded_chunks.has(make_chunk_key(chunk_position)): 
+					continue
+				add_chunk(Vector2(ix, iz))
 		
 		for key in _loaded_chunks:
-			if _loaded_chunks[key].chunk_position.distance_to(Vector2(chunk_x, chunk_z)) > _render_distance:
-				free_chunk(key)
+			var chunk_pos = parse_chunk_key(key)
+			if chunk_pos.distance_to(Vector2(chunk_x, chunk_z)) > _render_distance:
+				remove_chunk(key)
 
 
-func make_chunk(chunk_position: Vector2) -> void:
-	var key = make_chunk_key(chunk_position)
-	if _loaded_chunks.has(key): return
-
+func add_chunk(chunk_position: Vector2) -> void:
 	var position = Vector3(chunk_position.x * _chunk_size, 0, chunk_position.y * _chunk_size)
-	var chunk_mesh = make_chunk_mesh(position)
-	var chunk_collider = null if not _make_collider else make_chunk_collider(chunk_mesh)
-	
-	var chunk = Chunk.new(chunk_position, chunk_mesh, chunk_collider)
-	_loaded_chunks[key] = chunk
+	var chunk = make_chunk(position)
+	_loaded_chunks[make_chunk_key(chunk_position)] = chunk
 	call_deferred("add_child", chunk)
 
 
-func free_chunk(key: String) -> void:
+func remove_chunk(key: String) -> void:
 	var chunk = _loaded_chunks[key]
 	var erased = _loaded_chunks.erase(key)
 	if erased: chunk.queue_free()
 
 
-func make_chunk_mesh(position: Vector3) -> MeshInstance:
+func make_chunk(position: Vector3) -> MeshInstance:
 	var arr = []
 	arr.resize(Mesh.ARRAY_MAX)
 	
@@ -119,34 +118,38 @@ func make_chunk_mesh(position: Vector3) -> MeshInstance:
 	arr[Mesh.ARRAY_NORMAL] = norms
 	arr[Mesh.ARRAY_INDEX]  = inds
 	
-	var mesh_instance = MeshInstance.new()
-	mesh_instance.mesh = Mesh.new()
-	mesh_instance.mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
-	mesh_instance.mesh.surface_set_material(0, _chunk_material)
+	var chunk_mesh = MeshInstance.new()
+	chunk_mesh.mesh = Mesh.new()
+	chunk_mesh.mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	chunk_mesh.mesh.surface_set_material(0, _chunk_material)
 	
-	if needs_water_mesh: mesh_instance.add_child(make_water_mesh(position))
-	return mesh_instance
-
-
-func make_water_mesh(position: Vector3) -> MeshInstance:
-	var mesh_instance = MeshInstance.new()
-	mesh_instance.translation = Vector3(position.x + _chunk_size / 2.0, _water_level, position.z + _chunk_size / 2.0)
-	mesh_instance.mesh = PlaneMesh.new()
-	mesh_instance.mesh.surface_set_material(0, _water_material)
-	mesh_instance.mesh.size = Vector2(_chunk_size, _chunk_size)
-	return mesh_instance
-
-
-func make_chunk_collider(mesh_instance: MeshInstance) -> StaticBody:
-	var collision_shape = CollisionShape.new()
-	collision_shape.shape = mesh_instance.mesh.create_trimesh_shape()
-	var static_body = StaticBody.new()
-	static_body.add_child(collision_shape)
-	return static_body
+	if needs_water_mesh:
+		var water_mesh = MeshInstance.new()		
+		water_mesh.mesh = PlaneMesh.new()
+		water_mesh.mesh.surface_set_material(0, _water_material)
+		water_mesh.mesh.size = Vector2(_chunk_size, _chunk_size)
+		
+		water_mesh.translation = Vector3(
+				position.x + _chunk_size / 2.0, 
+				_water_level, position.z + 
+				_chunk_size / 2.0
+		)
+		
+		chunk_mesh.add_child(water_mesh)
+	
+	if _needs_collider:
+		chunk_mesh.create_trimesh_collision()
+	
+	return chunk_mesh
 
 
 func make_chunk_key(chunk_position: Vector2) -> String:
 	return str(chunk_position.x, ",", chunk_position.y)
+
+
+func parse_chunk_key(key: String) -> Vector2:
+	var arr_vec = key.split(",")
+	return Vector2(arr_vec[0], arr_vec[1])
 
 
 func sample_noise(x: int, z: int) -> float:
@@ -167,23 +170,9 @@ var _chunk_size: int
 var _chunk_density: int
 
 ## Terrain generation
-var _make_collider: bool
+var _needs_collider: bool
 var _chunk_material: Material
 var _water_material: Material
 var _water_level: float
 var _noise_generator: OpenSimplexNoise
 var _noise_scale: float
-
-
-################
-# Chunk struct #
-################
-
-
-class Chunk extends Node:
-	func _init(chunk_pos: Vector2, chunk_mesh: MeshInstance, chunk_collider: StaticBody):
-		chunk_position = chunk_pos
-		if not chunk_mesh == null: add_child(chunk_mesh)
-		if not chunk_collider == null: add_child(chunk_collider)
-	
-	var chunk_position: Vector2

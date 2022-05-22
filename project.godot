@@ -18,10 +18,16 @@ _global_script_classes=[ {
 "class": "TerrainGeneratorAsync",
 "language": "GDScript",
 "path": "res://src/terrain_generator_async.gd"
+}, {
+"base": "TerrainGenerator",
+"class": "TerrainGeneratorAsync_Old",
+"language": "GDScript",
+"path": "res://src/terrain_generator_async_old.gd"
 } ]
 _global_script_class_icons={
 "TerrainGenerator": "",
-"TerrainGeneratorAsync": ""
+"TerrainGeneratorAsync": "",
+"TerrainGeneratorAsync_Old": ""
 }
 
 [application]
@@ -83,4 +89,5 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+threads/thread_model=2
 environment/default_environment="res://default_env.tres"

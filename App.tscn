@@ -7,16 +7,20 @@
 
 [node name="App" type="Spatial"]
 script = ExtResource( 2 )
+render_distance = 20
+chunk_size = 256
+chunk_density = 48
 chunk_material = ExtResource( 3 )
 water_material = ExtResource( 4 )
-noise_period = 500
-noise_scale = 1000
+noise_period = 2000
+noise_scale = 2000
 
 [node name="SimplePlayer" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0 )
 near = 0.5
 far = 8192.0
 script = ExtResource( 1 )
+speed = 200.0
 
 [node name="Light" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0 )
