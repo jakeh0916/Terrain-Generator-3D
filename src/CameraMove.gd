@@ -24,6 +24,7 @@ func _physics_process(delta):
 		rotation.x -= look_buffer.y * delta * look_sens
 		rotation.x = clamp(rotation.x, - PI/2, PI/2)
 		look_buffer = Vector2.ZERO
+	translation += Vector3.FORWARD * speed / 2 * delta
 
 func _input(event):
 	if event is InputEventMouseMotion:

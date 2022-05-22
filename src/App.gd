@@ -29,10 +29,11 @@ func _ready():
 		"noise_scale": noise_scale
 	}
 	
-	var terrain_generator = TerrainGenerator.new(target, render_opts, terrain_opts)
+	var terrain_generator = TerrainGeneratorThreaded.new(target, render_opts, terrain_opts)
 	add_child(terrain_generator)
 
 func _process(_delta):
 	if Input.is_action_just_pressed("toggle_fullscreen"):
 		OS.window_fullscreen = not OS.window_fullscreen
-	if Input.is_action_just_pressed("pause"): get_tree().quit()
+	if Input.is_action_just_pressed("pause"): 
+		get_tree().quit()

@@ -10,12 +10,30 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node",
+"class": "Chunk",
+"language": "GDScript",
+"path": "res://src/Chunk.gd"
+}, {
+"base": "Node",
 "class": "TerrainGenerator",
+"language": "GDScript",
+"path": "res://src/TerrainGenerator.gd"
+}, {
+"base": "Node",
+"class": "TerrainGeneratorAsync",
+"language": "GDScript",
+"path": "res://src/TerrainGeneratorAsync.gd"
+}, {
+"base": "TerrainGenerator",
+"class": "TerrainGeneratorThreaded",
 "language": "GDScript",
 "path": "res://src/TerrainGeneratorThreaded.gd"
 } ]
 _global_script_class_icons={
-"TerrainGenerator": ""
+"Chunk": "",
+"TerrainGenerator": "",
+"TerrainGeneratorAsync": "",
+"TerrainGeneratorThreaded": ""
 }
 
 [application]

@@ -1,6 +1,8 @@
 extends Node
-class_name TerrainGenerator
+class_name TerrainGeneratorAsync
 
+var worker
+var worker_is_busy
 var target = null
 var loaded_chunks
 
@@ -35,27 +37,37 @@ func _init(target_node: Spatial, render_opts: Dictionary, terrain_opts: Dictiona
 	noise.octaves = terrain_opts["noise_octaves"]
 	noise.period = terrain_opts["noise_period"]
 	noise_scale = terrain_opts["noise_scale"]
+	
+	worker = Thread.new()
 
 func _process(_delta):
-	generate()
+	if not target == null and not worker.is_active() and not worker_is_busy:
+		worker.start(self, "update_chunks", [target.translation, worker])
+		worker_is_busy = true
+
+func ready_worker(thread):
+	thread.wait_to_finish()
+	worker_is_busy = false
 
 ## Chunk Handling
 
-func generate():
-	if not target == null:
-		var position = target.translation()
-		if position.x < 0: position.x -= chunk_size
-		if position.z < 0: position.z -= chunk_size
-		var chunk_x: int = int(position.x) / chunk_size
-		var chunk_z: int = int(position.z) / chunk_size
-		
-		for ix in range(chunk_x - render_distance, chunk_x + render_distance + 1):
-			for iz in range(chunk_z - render_distance, chunk_z + render_distance + 1):
-				if Vector2(ix, iz).distance_to(Vector2(chunk_x, chunk_z)) <= render_distance:
-					make_chunk(Vector2(ix, iz))
-		for key in loaded_chunks:
-			if loaded_chunks[key].chunk_position.distance_to(Vector2(chunk_x, chunk_z)) > render_distance:
-				free_chunk(key)
+
+
+func update_chunks(arr: Array):
+	var position = arr[0]
+	if position.x < 0: position.x -= chunk_size
+	if position.z < 0: position.z -= chunk_size
+	var chunk_x: int = int(position.x) / chunk_size
+	var chunk_z: int = int(position.z) / chunk_size
+	
+	for ix in range(chunk_x - render_distance, chunk_x + render_distance + 1):
+		for iz in range(chunk_z - render_distance, chunk_z + render_distance + 1):
+			if Vector2(ix, iz).distance_to(Vector2(chunk_x, chunk_z)) <= render_distance:
+				make_chunk(Vector2(ix, iz))
+	for key in loaded_chunks:
+		if loaded_chunks[key].chunk_position.distance_to(Vector2(chunk_x, chunk_z)) > render_distance:
+			free_chunk(key)
+	call_deferred("ready_worker", arr[1])
 
 func make_chunk(chunk_position: Vector2):
 	var key = make_chunk_key(chunk_position)
@@ -67,7 +79,7 @@ func make_chunk(chunk_position: Vector2):
 	
 	var chunk = Chunk.new(chunk_position, chunk_mesh, chunk_collider)
 	loaded_chunks[key] = chunk
-	add_child(chunk)
+	call_deferred("add_child", chunk)
 
 func free_chunk(key: String):
 	var chunk = loaded_chunks[key]
