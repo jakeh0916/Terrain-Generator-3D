@@ -24,13 +24,11 @@ func _init(target: Spatial, render_opts: Dictionary, generation_opts: Dictionary
 	_noise_scale = generation_opts["noise_scale"]
 
 
-func _physics_process(delta):
+func _process(_delta):
 	generate()
 
 
-######################
-# Terrain generation #
-######################
+### Terrain generation ###
 
 
 func generate() -> void:
@@ -38,8 +36,8 @@ func generate() -> void:
 		var position = _target.translation
 		if position.x < 0: position.x -= _chunk_size
 		if position.z < 0: position.z -= _chunk_size
-		var chunk_x: int = int(position.x) / _chunk_size
-		var chunk_z: int = int(position.z) / _chunk_size
+		var chunk_x: int = int(position.x) / int(_chunk_size)
+		var chunk_z: int = int(position.z) / int(_chunk_size)
 		
 		for ix in range(chunk_x - _render_distance, chunk_x + _render_distance + 1):
 			for iz in range(chunk_z - _render_distance, chunk_z + _render_distance + 1):
@@ -58,18 +56,7 @@ func generate() -> void:
 
 func add_chunk(chunk_position: Vector2) -> void:
 	var position = Vector3(chunk_position.x * _chunk_size, 0, chunk_position.y * _chunk_size)
-	var chunk = make_chunk(position)
-	_loaded_chunks[make_chunk_key(chunk_position)] = chunk
-	call_deferred("add_child", chunk)
-
-
-func remove_chunk(key: String) -> void:
-	var chunk = _loaded_chunks[key]
-	var erased = _loaded_chunks.erase(key)
-	if erased: chunk.queue_free()
-
-
-func make_chunk(position: Vector3) -> MeshInstance:
+	
 	var arr = []
 	arr.resize(Mesh.ARRAY_MAX)
 	
@@ -140,7 +127,14 @@ func make_chunk(position: Vector3) -> MeshInstance:
 	if _needs_collider:
 		chunk_mesh.create_trimesh_collision()
 	
-	return chunk_mesh
+	_loaded_chunks[make_chunk_key(chunk_position)] = chunk_mesh
+	call_deferred("add_child", chunk_mesh)
+
+
+func remove_chunk(key: String) -> void:
+	var chunk = _loaded_chunks[key]
+	var erased = _loaded_chunks.erase(key)
+	if erased: chunk.queue_free()
 
 
 func make_chunk_key(chunk_position: Vector2) -> String:
@@ -156,9 +150,7 @@ func sample_noise(x: int, z: int) -> float:
 	return _noise_generator.get_noise_2d(x, z) * _noise_scale
 
 
-##################
-# Private fields #
-##################
+### Private fields ###
 
 
 var _target: Spatial

@@ -1,13 +1,8 @@
-[gd_resource type="ShaderMaterial" load_steps=12 format=2]
+[gd_resource type="ShaderMaterial" load_steps=7 format=2]
 
-[ext_resource path="res://tex/grass_norm.png" type="Texture" id=2]
+[ext_resource path="res://tex/cliff_tex.png" type="Texture" id=2]
 [ext_resource path="res://tex/depth_tex.png" type="Texture" id=3]
-[ext_resource path="res://tex/depth_norm.png" type="Texture" id=4]
-[ext_resource path="res://tex/sand_tex.png" type="Texture" id=5]
-[ext_resource path="res://tex/cliff_tex.png" type="Texture" id=6]
 [ext_resource path="res://tex/grass_tex.png" type="Texture" id=7]
-[ext_resource path="res://tex/sand_norm.png" type="Texture" id=8]
-[ext_resource path="res://tex/cliff_norm.png" type="Texture" id=9]
 [ext_resource path="res://mat/ChunkShader.tres" type="Shader" id=11]
 
 [sub_resource type="OpenSimplexNoise" id=1]
@@ -22,20 +17,13 @@ noise = SubResource( 1 )
 
 [resource]
 shader = ExtResource( 11 )
-shader_param/uv_scale = 3.0
-shader_param/layer_noise_scale = 50.0
-shader_param/depth_start = -100.0
-shader_param/depth_blend = 20.0
-shader_param/sand_start = -20.0
-shader_param/sand_blend = 20.0
-shader_param/grass_start = 50.0
-shader_param/grass_blend = 10.0
+shader_param/uv_scale = 8.0
+shader_param/depth_start = -600.0
+shader_param/depth_blend = 100.0
+shader_param/grass_start = -200.0
+shader_param/grass_blend = 100.0
+shader_param/layer_noise_scale = 100.0
 shader_param/layering_noise = SubResource( 2 )
 shader_param/depth_tex = ExtResource( 3 )
-shader_param/sand_tex = ExtResource( 5 )
 shader_param/grass_tex = ExtResource( 7 )
-shader_param/cliff_tex = ExtResource( 6 )
-shader_param/depth_norm = ExtResource( 4 )
-shader_param/sand_norm = ExtResource( 8 )
-shader_param/grass_norm = ExtResource( 2 )
-shader_param/cliff_norm = ExtResource( 9 )
+shader_param/cliff_tex = ExtResource( 2 )

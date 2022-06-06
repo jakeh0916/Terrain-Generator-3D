@@ -64,7 +64,7 @@ func make_worker_ready(thread):
 ##################
 
 
-const MAX_QUEUE = 32
+const MAX_QUEUE = 16
 var _add_queue: Array
 var _remove_queue: Array
 

@@ -18,16 +18,10 @@ _global_script_classes=[ {
 "class": "TerrainGeneratorAsync",
 "language": "GDScript",
 "path": "res://src/terrain_generator_async.gd"
-}, {
-"base": "TerrainGenerator",
-"class": "TerrainGeneratorAsync_Old",
-"language": "GDScript",
-"path": "res://src/terrain_generator_async_old.gd"
 } ]
 _global_script_class_icons={
 "TerrainGenerator": "",
-"TerrainGeneratorAsync": "",
-"TerrainGeneratorAsync_Old": ""
+"TerrainGeneratorAsync": ""
 }
 
 [application]
@@ -36,9 +30,18 @@ config/name="InfiniteTerrain3D"
 run/main_scene="res://App.tscn"
 config/icon="res://icon.png"
 
+[debug]
+
+gdscript/warnings/integer_division=false
+
 [display]
 
+window/size/fullscreen=true
 window/stretch/mode="2d"
+
+[global]
+
+multithreading=false
 
 [input]
 

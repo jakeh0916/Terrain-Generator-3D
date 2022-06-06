@@ -1,0 +1,25 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type spatial;
+render_mode unshaded;
+
+uniform vec4 mist_color : hint_color;
+uniform float mist_strength = 0.01;
+
+void fragment() {
+	float depth = texture(DEPTH_TEXTURE, SCREEN_UV).r;
+	vec3 screen_alb = texture(SCREEN_TEXTURE, SCREEN_UV).rgb;
+	
+	// Convert depth from screenspace
+	depth = depth * 2f - 1f;
+	depth = PROJECTION_MATRIX[3][2] / (depth + PROJECTION_MATRIX[2][2]);
+	depth = depth + VERTEX.z;
+	
+	// Beer-Lambert law
+	depth = exp(-depth * mist_strength);
+	depth = clamp(depth, 0f, 1f);
+	
+	ALBEDO = mist_color.rgb * (1f - depth);
+	ALPHA = 1f - depth;
+}"

@@ -3,29 +3,21 @@
 [resource]
 code = "shader_type spatial;
 
-uniform float uv_scale = 1.0;
-uniform float layer_noise_scale;
+uniform float uv_scale = 1f;
 
 uniform float depth_start;
 uniform float depth_blend;
 
-uniform float sand_start;
-uniform float sand_blend;
-
 uniform float grass_start;
 uniform float grass_blend;
 
+uniform float layer_noise_scale = 5f;
 uniform sampler2D layering_noise;
 
 uniform sampler2D depth_tex : hint_albedo;
-uniform sampler2D sand_tex  : hint_albedo;
 uniform sampler2D grass_tex : hint_albedo;
 uniform sampler2D cliff_tex : hint_albedo;
-
-uniform sampler2D depth_norm : hint_albedo;
-uniform sampler2D sand_norm  : hint_albedo;
-uniform sampler2D grass_norm : hint_albedo;
-uniform sampler2D cliff_norm : hint_albedo;
+uniform sampler2D norm_map : hint_albedo;
 
 varying vec3 interp_world_pos;
 varying vec3 interp_norm;
@@ -36,17 +28,11 @@ void vertex() {
 }
 
 vec3 mix_cliff_albedo (vec3 albedo, vec2 uv, vec3 n) {
-	if (interp_norm.y >= 0.0 && interp_norm.y < 0.8) {
-		float blend = n.y / 0.6;
+	if (interp_norm.y >= 0f && interp_norm.y < 0.4) {
+		float blend = n.y / 0.4;
+		blend = clamp(blend, 0f, 1f);
 		return mix(texture(cliff_tex, uv).rgb, albedo, blend);
 	} else return albedo;
-}
-
-vec3 mix_cliff_norm (vec3 norm, vec2 uv, vec3 n) {
-	if (interp_norm.y >= 0.0 && interp_norm.y < 0.6) {
-		float blend = n.y / 0.6;
-		return mix(texture(cliff_norm, uv).rgb, norm, blend);
-	} else return norm;
 }
 
 void fragment() {
@@ -54,36 +40,24 @@ void fragment() {
 	float y = interp_world_pos.y + (texture(layering_noise, interp_world_pos.xz / 1024f).r - 0.5) * 2f * layer_noise_scale;
 	vec3 n = interp_norm;
 	
-	if (y < depth_start) {
+	if (y <= depth_start) {
 		ALBEDO = vec3(0f, 0f, 0f);
-		NORMALMAP = texture(depth_norm, uv).rgb;
 	} else if (y <= depth_start + depth_blend) {
 		float blend = (y - depth_start) / depth_blend;
+		blend = clamp(blend, 0f, 1f);
 		ALBEDO = mix(vec3(0f, 0f, 0f), texture(depth_tex, uv).rgb, blend);
-		NORMALMAP = texture(depth_norm, uv).rgb;
 	}
-	
-	else if (y < sand_start) {
+	else if (y <= grass_start) {
 		ALBEDO = texture(depth_tex, uv).rgb;
-		NORMALMAP = texture(depth_norm, uv).rgb;
-	} else if (y <= sand_start + sand_blend) {
-		float blend = (y - sand_start) / sand_blend;
-		ALBEDO = mix(texture(depth_tex, uv).rgb, texture(sand_tex, uv).rgb, blend);
-		NORMALMAP = mix(texture(depth_norm, uv).rgb, texture(sand_norm, uv).rgb, blend);
-	}
-	
-	else if (y < grass_start) {
-		ALBEDO = texture(sand_tex, uv).rgb;
-		NORMALMAP = texture(sand_norm, uv).rgb;
 	} else if (y <= grass_start + grass_blend) {
 		float blend = (y - grass_start) / grass_blend;
-		ALBEDO = mix(texture(sand_tex, uv).rgb, mix_cliff_albedo(texture(grass_tex, uv).rgb, uv, n), blend);
-		NORMALMAP = mix(texture(sand_norm, uv).rgb, mix_cliff_norm(texture(grass_norm, uv).rgb, uv, n), blend);
+		blend = clamp(blend, 0f, 1f);
+		ALBEDO = mix(texture(depth_tex, uv).rgb, mix_cliff_albedo(texture(grass_tex, uv).rgb, uv, n), blend);
 	}
-	
 	else {
 		ALBEDO = mix_cliff_albedo(texture(grass_tex, uv).rgb, uv, n);
-		NORMALMAP = mix_cliff_norm(texture(grass_norm, uv).rgb, uv, n);
 	}
+	
+	NORMALMAP = texture(norm_map, uv).rgb;
 }
 "
