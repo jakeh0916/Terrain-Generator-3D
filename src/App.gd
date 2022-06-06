@@ -30,5 +30,5 @@ func _ready():
 		"noise_scale": noise_scale
 	}
 	
-	var terrain_generator = TerrainGenerator.new(target, render_opts, terrain_opts)
+	var terrain_generator = TerrainGeneratorAsync_Demo.new(target, render_opts, terrain_opts)
 	add_child(terrain_generator)

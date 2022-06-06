@@ -15,9 +15,7 @@ func _notification(what):
 			_worker.wait_to_finish()
 
 
-######################
-# Terrain generation #
-######################
+### Terrain generation ###
 
 
 func generate():
@@ -59,9 +57,7 @@ func make_worker_ready(thread):
 	_is_busy = false
 
 
-##################
-# Private fields #
-##################
+### Private fields ###
 
 
 const MAX_QUEUE = 16

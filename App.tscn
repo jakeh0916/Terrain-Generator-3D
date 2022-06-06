@@ -46,6 +46,7 @@ adjustment_brightness = 0.5
 [node name="App" type="Spatial"]
 script = ExtResource( 2 )
 render_distance = 32
+chunk_density = 32
 chunk_material = ExtResource( 4 )
 water_material = ExtResource( 3 )
 
