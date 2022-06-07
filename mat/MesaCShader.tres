@@ -1,0 +1,29 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type spatial;
+
+uniform float uv_scale = 1f;
+
+uniform sampler2D sand1_tex : hint_albedo;
+uniform sampler2D sand2_tex : hint_albedo;
+uniform sampler2D sand1_norm : hint_normal;
+uniform sampler2D sand2_norm : hint_normal;
+
+uniform sampler2D layering_noise;
+
+varying vec3 interp_world_pos;
+varying vec3 interp_norm;
+
+void vertex() {
+	interp_world_pos = (WORLD_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	interp_norm = NORMAL;
+}
+
+void fragment() {
+	vec2 uv = UV * uv_scale;
+	float blend = texture(layering_noise, interp_world_pos.xz / 10000f).r;
+	
+	ALBEDO = mix(texture(sand1_tex, uv), texture(sand2_tex, uv), blend).rgb;
+	NORMALMAP = mix(texture(sand1_norm, uv), texture(sand2_norm, uv), blend).rgb;
+}"

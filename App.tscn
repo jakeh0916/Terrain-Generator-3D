@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://src/simple_player.gd" type="Script" id=1]
 [ext_resource path="res://src/app.gd" type="Script" id=2]
-[ext_resource path="res://mat/WaterMaterial.tres" type="Material" id=3]
-[ext_resource path="res://mat/ChunkMaterial.tres" type="Material" id=4]
+[ext_resource path="res://mat/MesaCMaterial.tres" type="Material" id=3]
+[ext_resource path="res://mat/MistyHillsWMaterial.tres" type="Material" id=4]
+[ext_resource path="res://mat/MistyHillsCMaterial.tres" type="Material" id=5]
 
 [sub_resource type="ProceduralSky" id=1]
 sky_top_color = Color( 0.447059, 0.694118, 0.960784, 1 )
@@ -45,10 +46,12 @@ adjustment_brightness = 0.5
 
 [node name="App" type="Spatial"]
 script = ExtResource( 2 )
-render_distance = 32
+chunk_size = 64
 chunk_density = 32
-chunk_material = ExtResource( 4 )
-water_material = ExtResource( 3 )
+misty_hills_cmat = ExtResource( 5 )
+misty_hills_wmat = ExtResource( 4 )
+mesa_cmat = ExtResource( 3 )
+mesa_wmat = ExtResource( 4 )
 
 [node name="SimplePlayer" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0 )
@@ -56,6 +59,7 @@ environment = SubResource( 2 )
 near = 0.5
 far = 8192.0
 script = ExtResource( 1 )
+speed = 100.0
 
 [node name="Light" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 0, 0 )

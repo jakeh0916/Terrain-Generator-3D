@@ -3,7 +3,7 @@
 [ext_resource path="res://tex/cliff_tex.png" type="Texture" id=2]
 [ext_resource path="res://tex/depth_tex.png" type="Texture" id=3]
 [ext_resource path="res://tex/grass_tex.png" type="Texture" id=7]
-[ext_resource path="res://mat/ChunkShader.tres" type="Shader" id=11]
+[ext_resource path="res://mat/MistyHillsCShader.tres" type="Shader" id=11]
 
 [sub_resource type="OpenSimplexNoise" id=1]
 octaves = 9

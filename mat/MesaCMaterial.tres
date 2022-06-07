@@ -1,0 +1,22 @@
+[gd_resource type="ShaderMaterial" load_steps=8 format=2]
+
+[ext_resource path="res://mat/MesaCShader.tres" type="Shader" id=1]
+[ext_resource path="res://tex/sand1_tex.png" type="Texture" id=2]
+[ext_resource path="res://tex/sand2_tex.png" type="Texture" id=3]
+[ext_resource path="res://tex/sand2_norm.png" type="Texture" id=4]
+[ext_resource path="res://tex/sand1_norm.png" type="Texture" id=5]
+
+[sub_resource type="OpenSimplexNoise" id=1]
+
+[sub_resource type="NoiseTexture" id=2]
+seamless = true
+noise = SubResource( 1 )
+
+[resource]
+shader = ExtResource( 1 )
+shader_param/uv_scale = 2.0
+shader_param/sand1_tex = ExtResource( 2 )
+shader_param/sand2_tex = ExtResource( 3 )
+shader_param/sand1_norm = ExtResource( 5 )
+shader_param/sand2_norm = ExtResource( 4 )
+shader_param/layering_noise = SubResource( 2 )

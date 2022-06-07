@@ -25,7 +25,7 @@ func generate():
 	
 	var queued_actions = _add_queue.size() + _remove_queue.size()
 	if queued_actions >= MAX_QUEUE:
-		_worker.start(self, "do_queued_actions_async", [_worker])
+		var _x = _worker.start(self, "do_queued_actions_async", [_worker])
 		_is_busy = true
 
 
