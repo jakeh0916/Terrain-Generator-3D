@@ -9,5 +9,5 @@ The terrain generated is very simple, so feel free to use this as a starting poi
 
 ### How do I run it
 1. Download the project as a zip & unzip somewhere on your device
-2. Use the Godot launcher (last tested with Godot 3.3.x) to open the project
+2. Use the Godot launcher (last tested with Godot 3.4.x) to open the project
 3. Run from the Godot application
